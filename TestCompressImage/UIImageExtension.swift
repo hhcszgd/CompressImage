@@ -8,18 +8,22 @@
 
 import UIKit
 extension UIImage{
-    func compressImageSize() -> UIImage? {
+    func compressImageSize() -> UIImage {
         let dd = UIImageJPEGRepresentation(self, 1)
         if dd?.count ?? 0 > 1300000{//压缩到大概1M以下
             UIGraphicsBeginImageContextWithOptions(self.size, true, 0.5)
             self.draw(in: CGRect(x: 0, y: 0, width: self.size.width , height: self.size.height ))
-            let  newImage  = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext();
-            guard let data = UIImageJPEGRepresentation(newImage!, 1) else{
-                return nil
+            if let  newImage  = UIGraphicsGetImageFromCurrentImageContext(){
+                UIGraphicsEndImageContext();
+                guard let data = UIImageJPEGRepresentation(newImage, 1) else{
+                    return newImage
+                }
+                guard let convertImage = UIImage(data: data) else{return newImage}
+                return convertImage.compressImageSize()
+            }else{
+                return self
             }
-            guard let convertImage = UIImage(data: data) else{return nil}
-            return convertImage.compressImageSize()
+            
         }
         return self
     }
@@ -28,14 +32,14 @@ extension UIImage{
     ///
     /// - Parameters:
     ///   - quality: 0.0 ~ 1.0, 1.0 is the best quality
-    func compressImageQuality( quality : CGFloat) -> UIImage? {
+    func compressImageQuality( quality : CGFloat) -> UIImage {
         guard let data = UIImageJPEGRepresentation(self , quality) else{
-            return nil
+            return self
         }
-        guard let convertImage = UIImage(data: data) else{return nil}
+        guard let convertImage = UIImage(data: data) else{return self}
         return convertImage
     }
-    func addWaterImage(_ waterImage : UIImage , waterImageRect : CGRect? = nil) -> UIImage? {
+    func addWaterImage(_ waterImage : UIImage , waterImageRect : CGRect? = nil) -> UIImage {
         UIGraphicsBeginImageContextWithOptions(self.size, true, 0)// 0 不压缩
         self.draw(in: CGRect(x: 0, y: 0, width: self.size.width , height: self.size.height))
         let waterImageRect = waterImageRect
@@ -54,7 +58,7 @@ extension UIImage{
         let  newImage  = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext();
         let data = UIImageJPEGRepresentation(newImage!, 1)////最好一个参数起压缩作用
-        guard let convertImage = UIImage(data: data!) else{return nil}
+        guard let convertImage = UIImage(data: data!) else{return self}
         return convertImage
     }
     func writeImage(filePathLastComponent:String? = nil ) {

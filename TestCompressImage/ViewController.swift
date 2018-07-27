@@ -26,22 +26,20 @@ class ViewController: UIViewController {
 
     }
     
-    func addWaterImage(_ waterImage : UIImage , in backgroundImage : UIImage) -> UIImage? {
+    func addWaterImage(_ waterImage : UIImage , in backgroundImage : UIImage) -> UIImage {
         print("开始第一步压缩")
         let backgroundImage = backgroundImage.compressImageQuality(quality: 0.1)
         print("开始第二步压缩")
 //        backgroundImage?.writeImage()
-        if let img = backgroundImage?.compressImageSize(){
-            print("开始添加水印")
-            let img2 = img.addWaterImage(waterImage)
-            print("添加水印结束 开始第三步压缩")
-            let img3 = img2?.compressImageQuality(quality: 0.1)
-            print("压缩结束")
-            img3?.writeImage()
-            self.imageView2.image = img3
-            return img3
-        }
-        return backgroundImage
+        let img = backgroundImage.compressImageSize()
+        print("开始添加水印")
+        let img2 = img.addWaterImage(waterImage)
+        print("添加水印结束 开始第三步压缩")
+        let img3 = img2.compressImageQuality(quality: 0.1)
+        print("压缩结束")
+        img3.writeImage()
+        self.imageView2.image = img3
+        return img3
     }
   
 }
